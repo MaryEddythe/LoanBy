@@ -1,20 +1,50 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ClientsStackScreen, LoansStackScreen, PaymentsStackScreen, ToolsStackScreen } from './src/navigation/Stacks';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function App() {
+export type RootTabParamList = {
+  Clients: undefined;
+  Loans: undefined;
+  Payments: undefined;
+  Tools: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootTabParamList>();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: string;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+            if (route.name === 'Clients') {
+              iconName = focused ? 'people' : 'people-outline';
+            } else if (route.name === 'Loans') {
+              iconName = focused ? 'cash' : 'cash-outline';
+            } else if (route.name === 'Payments') {
+              iconName = focused ? 'wallet' : 'wallet-outline';
+            } else {
+              iconName = focused ? 'hammer' : 'hammer-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#3b82f6',
+          tabBarInactiveTintColor: 'gray',
+          headerShown: false,
+        })}
+      >
+        <Tab.Screen name="Clients" component={ClientsStackScreen} />
+        <Tab.Screen name="Loans" component={LoansStackScreen} />
+        <Tab.Screen name="Payments" component={PaymentsStackScreen} />
+        <Tab.Screen name="Tools" component={ToolsStackScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;
