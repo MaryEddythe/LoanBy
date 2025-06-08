@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ClientListProps } from '../navigation/types';
 import { Client } from '../navigation/types';
@@ -22,13 +22,28 @@ const ClientList = ({ navigation }: ClientListProps) => {
     }
   };
 
+  const handleOpenURL = async (url: string) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
+
   const renderItem = ({ item }: { item: Client }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.item}
       onPress={() => navigation.navigate('AddEditClient', { client: item })}
     >
       <Text style={styles.name}>{item.name}</Text>
+      {item.employment ? <Text style={styles.employment}>{item.employment}</Text> : null}
       <Text style={styles.phone}>{item.phone}</Text>
+      {item.facebookLink && (
+        <Text style={styles.facebookLink} onPress={() => handleOpenURL(item.facebookLink!)}>
+          Facebook Profile
+        </Text>
+      )}
     </TouchableOpacity>
   );
 
@@ -64,9 +79,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  employment: {
+    fontSize: 14,
+    color: '#444',
+    fontStyle: 'italic',
+  },
   phone: {
     fontSize: 14,
     color: '#666',
+  },
+  facebookLink: {
+    fontSize: 14,
+    color: '#3b5998',
+    textDecorationLine: 'underline',
+    marginTop: 4,
   },
   empty: {
     textAlign: 'center',

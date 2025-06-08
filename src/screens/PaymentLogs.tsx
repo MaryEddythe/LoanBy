@@ -18,16 +18,26 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
     { id: '3', loanId: '2', amount: 300, date: '2023-07-20', method: 'Mobile Money' },
   ];
 
-  const renderItem = ({ item }: { item: Payment }) => (
-    <View style={styles.item}>
-      <Text style={styles.amount}>${item.amount.toLocaleString()}</Text>
-      <View style={styles.row}>
-        <Text style={styles.date}>{item.date}</Text>
-        <Text style={styles.method}>{item.method}</Text>
+  const loans = [
+    { id: '1', clientName: 'John Doe' },
+    { id: '2', clientName: 'Jane Smith' },
+  ];
+
+  const renderItem = ({ item }: { item: Payment }) => {
+    const client = loans.find(loan => loan.id === item.loanId);
+    const clientName = client ? client.clientName : 'Unknown Client';
+
+    return (
+      <View style={styles.item}>
+        <Text style={styles.clientName}>{clientName}</Text>
+        <Text style={styles.amount}>${item.amount.toLocaleString()}</Text>
+        <View style={styles.row}>
+          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.method}>{item.method}</Text>
+        </View>
       </View>
-      <Text style={styles.loanId}>Loan ID: {item.loanId}</Text>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -57,6 +67,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
+  clientName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
   amount: {
     fontSize: 18,
     color: 'green',
@@ -74,10 +89,6 @@ const styles = StyleSheet.create({
   method: {
     fontSize: 14,
     color: '#666',
-  },
-  loanId: {
-    fontSize: 14,
-    color: '#3b82f6',
   },
   empty: {
     textAlign: 'center',

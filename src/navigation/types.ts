@@ -50,6 +50,8 @@ export interface Client {
   id: string;
   name: string;
   phone: string;
+  employment?: string;
+  facebookLink?: string;
   email?: string;
   address?: string;
 }
@@ -58,7 +60,8 @@ export interface Loan {
   id: string;
   clientName: string;
   amount: number;
-  date: string;
+  startDate: string;
+  endDate: string;
   status: 'Active' | 'Paid';
 }
 

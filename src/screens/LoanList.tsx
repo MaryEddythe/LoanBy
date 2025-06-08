@@ -5,10 +5,10 @@ import { Loan } from '../navigation/types';
 
 const LoanList = ({ navigation }: LoanListProps) => {
   // Temporary dummy data - replace with your actual data
-  const loans: Loan[] = [
-    { id: '1', clientName: 'John Doe', amount: 5000, date: '2023-05-15', status: 'Active' },
-    { id: '2', clientName: 'Jane Smith', amount: 3000, date: '2023-06-20', status: 'Active' },
-    { id: '3', clientName: 'Robert Johnson', amount: 7000, date: '2023-04-10', status: 'Paid' },
+const loans: Loan[] = [
+    { id: '1', clientName: 'John Doe', amount: 5000, startDate: '2023-05-01', endDate: '2024-05-01', status: 'Active' },
+    { id: '2', clientName: 'Jane Smith', amount: 3000, startDate: '2023-06-01', endDate: '2024-06-01', status: 'Active' },
+    { id: '3', clientName: 'Robert Johnson', amount: 7000, startDate: '2023-04-01', endDate: '2024-04-01', status: 'Paid' },
   ];
 
   const renderItem = ({ item }: { item: Loan }) => (
@@ -19,7 +19,8 @@ const LoanList = ({ navigation }: LoanListProps) => {
       <Text style={styles.clientName}>{item.clientName}</Text>
       <Text style={styles.amount}>${item.amount.toLocaleString()}</Text>
       <View style={styles.row}>
-        <Text style={styles.date}>{item.date}</Text>
+        <Text style={styles.date}>Start: {item.startDate}</Text>
+        <Text style={styles.date}>End: {item.endDate}</Text>
         <Text style={[styles.status, { color: item.status === 'Active' ? 'green' : 'blue' }]}>
           {item.status}
         </Text>

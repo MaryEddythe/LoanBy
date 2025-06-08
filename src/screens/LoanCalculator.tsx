@@ -5,14 +5,14 @@ import { LoanCalculatorProps } from '../navigation/types';
 const LoanCalculator = ({ navigation }: LoanCalculatorProps) => {
   const [principal, setPrincipal] = useState('');
   const [rate, setRate] = useState('');
-  const [time, setTime] = useState('');
+  const [months, setMonths] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
   const [totalInterest, setTotalInterest] = useState<number | null>(null);
 
   const calculateLoan = () => {
     const p = parseFloat(principal);
     const r = parseFloat(rate) / 100 / 12;
-    const t = parseFloat(time) * 12;
+    const t = parseFloat(months);
     
     if (p && r && t) {
       const payment = (p * r * Math.pow(1 + r, t)) / (Math.pow(1 + r, t) - 1);
@@ -43,9 +43,9 @@ const LoanCalculator = ({ navigation }: LoanCalculatorProps) => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Loan Term (years)"
-        value={time}
-        onChangeText={setTime}
+        placeholder="Loan Term (months)"
+        value={months}
+        onChangeText={setMonths}
         keyboardType="numeric"
       />
       
