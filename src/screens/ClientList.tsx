@@ -37,12 +37,10 @@ const ClientList = ({ navigation }: ClientListProps) => {
       onPress={() => navigation.navigate('AddEditClient', { client: item })}
     >
       <Text style={styles.name}>{item.name}</Text>
-      {item.employment ? <Text style={styles.employment}>{item.employment}</Text> : null}
       <Text style={styles.phone}>{item.phone}</Text>
-      {item.facebookLink && (
-        <Text style={styles.facebookLink} onPress={() => handleOpenURL(item.facebookLink!)}>
-          Facebook Profile
-        </Text>
+      <Text style={styles.address}>{item.address}</Text>
+      {item.loanAmount && (
+        <Text style={styles.loanAmount}>Loan: ${item.loanAmount.toLocaleString()}</Text>
       )}
     </TouchableOpacity>
   );
@@ -88,10 +86,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  facebookLink: {
+  address: {
     fontSize: 14,
-    color: '#3b5998',
-    textDecorationLine: 'underline',
+    color: '#666',
+    marginTop: 4,
+  },
+  loanAmount: {
+    fontSize: 14,
+    color: '#666',
     marginTop: 4,
   },
   empty: {

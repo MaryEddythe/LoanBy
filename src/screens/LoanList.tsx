@@ -1,47 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoanListProps } from '../navigation/types';
-import { Loan } from '../navigation/types';
+import { Client } from '../navigation/types';
 
 const LoanList = ({ navigation }: LoanListProps) => {
-  // Temporary dummy data - replace with your actual data
-const loans: Loan[] = [
-    { id: '1', clientName: 'John Doe', amount: 5000, startDate: '2023-05-01', endDate: '2024-05-01', status: 'Active' },
-    { id: '2', clientName: 'Jane Smith', amount: 3000, startDate: '2023-06-01', endDate: '2024-06-01', status: 'Active' },
-    { id: '3', clientName: 'Robert Johnson', amount: 7000, startDate: '2023-04-01', endDate: '2024-04-01', status: 'Paid' },
-  ];
+  const [clients, setClients] = useState<Client[]>([]);
 
-  const renderItem = ({ item }: { item: Loan }) => (
-    <TouchableOpacity 
-      style={styles.item}
-      onPress={() => navigation.navigate('LoanDetails', { loan: item })}
-    >
-      <Text style={styles.clientName}>{item.clientName}</Text>
-      <Text style={styles.amount}>${item.amount.toLocaleString()}</Text>
+  useEffect(() => {
+    loadClients();
+  }, []);
+
+  const loadClients = async () => {
+    try {
+      const storedClients = await AsyncStorage.getItem('clients');
+      if (storedClients) {
+        setClients(JSON.parse(storedClients));
+      }
+    } catch (error) {
+      console.error('Failed to load clients', error);
+    }
+  };
+
+  const renderItem = ({ item }: { item: Client }) => {
+    const loan = {
+      id: item.id,
+      clientName: item.name,
+      amount: item.loanAmount || 0,
+      startDate: '',
+      endDate: '',
+      status: 'Active' as const,
+    };
+    return (
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => navigation.navigate('LoanDetails', { loan })}
+      >
+        <Text style={styles.clientName}>{item.name}</Text>
+      <Text style={styles.amount}>${item.loanAmount?.toLocaleString() || 0}</Text>
       <View style={styles.row}>
-        <Text style={styles.date}>Start: {item.startDate}</Text>
-        <Text style={styles.date}>End: {item.endDate}</Text>
-        <Text style={[styles.status, { color: item.status === 'Active' ? 'green' : 'blue' }]}>
-          {item.status}
-        </Text>
+        <Text style={styles.amount}>Start: {loan.startDate || 'N/A'}</Text>
+        <Text style={styles.amount}>End: {loan.endDate || 'N/A'}</Text>
+        <Text style={styles.status}>Loan</Text>
       </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={loans}
+        data={clients}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No loans found</Text>}
       />
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('CreateLoan')}
-      >
-        <Text style={styles.addButtonText}>+ Create Loan</Text>
-      </TouchableOpacity>
+      {/* Removed the Create Loan button as per user request */}
     </View>
   );
 };
@@ -69,10 +83,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  date: {
-    fontSize: 14,
-    color: '#666',
-  },
   status: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -81,17 +91,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: '#999',
-  },
-  addButton: {
-    backgroundColor: '#3b82f6',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    margin: 16,
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
 });
 

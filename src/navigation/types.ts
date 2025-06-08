@@ -54,6 +54,9 @@ export interface Client {
   facebookLink?: string;
   email?: string;
   address?: string;
+  loanAmount?: number; // <-- New field for loan amount
+  startDate?: string; // <-- New field for loan start date
+  endDate?: string;   // <-- New field for loan end date
 }
 
 export interface Loan {
