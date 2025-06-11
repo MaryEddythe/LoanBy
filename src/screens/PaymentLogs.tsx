@@ -47,12 +47,6 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No payments found</Text>}
       />
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('AddPayment')}
-      >
-        <Text style={styles.addButtonText}>+ Add Payment</Text>
-      </TouchableOpacity>
     </View>
   );
 };
