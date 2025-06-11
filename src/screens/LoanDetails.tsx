@@ -86,12 +86,34 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
   };
 
   const handleCall = async () => {
-    // This would need client phone number from the loan data
-    Alert.alert('Call Client', 'This feature would call the client directly');
+    if (!loan.clientPhone) {
+      Alert.alert('Error', 'No phone number available for this client');
+      return;
+    }
+
+    try {
+      const phoneUrl = `tel:${loan.clientPhone}`;
+      const canOpen = await Linking.canOpenURL(phoneUrl);
+      
+      if (canOpen) {
+        await Linking.openURL(phoneUrl);
+      } else {
+        Alert.alert('Error', 'Unable to make phone calls from this device');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to make the call');
+    }
   };
 
   const handleAddPayment = () => {
-    Alert.alert('Add Payment', 'This would open a form to add a new payment');
+    navigation.getParent()?.navigate('PaymentsStack', {
+      screen: 'AddPayment',
+      params: {
+        loanId: loan.id,
+        clientName: loan.clientName,
+        loanAmount: loan.amount,
+      },
+    });
   };
 
   const handleEditLoan = () => {
@@ -288,6 +310,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
   );
 };
 
+// ... (rest of the styles remain the same)
 const styles = StyleSheet.create({
   container: {
     flex: 1,

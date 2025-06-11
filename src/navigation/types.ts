@@ -17,7 +17,7 @@ export type LoansStackParamList = {
 // Payments Stack
 export type PaymentsStackParamList = {
   PaymentLogs: undefined;
-  AddPayment: undefined;
+  AddPayment: { loanId: string; clientName: string; loanAmount: number };
 };
 
 // Tools Stack
@@ -32,6 +32,14 @@ export type RootStackParamList = {
   LoansStack: NavigatorScreenParams<LoansStackParamList>;
   PaymentsStack: NavigatorScreenParams<PaymentsStackParamList>;
   ToolsStack: NavigatorScreenParams<ToolsStackParamList>;
+  LoanList: undefined;
+  LoanDetails: { loan: Loan };
+  CreateLoan: undefined;
+  AddPayment: {
+    loanId: string;
+    clientName: string;
+    loanAmount: number;
+  };
 };
 
 // Screen props types
@@ -41,7 +49,7 @@ export type LoanListProps = NativeStackScreenProps<LoansStackParamList, 'LoanLis
 export type CreateLoanProps = NativeStackScreenProps<LoansStackParamList, 'CreateLoan'>;
 export type LoanDetailsProps = NativeStackScreenProps<LoansStackParamList, 'LoanDetails'>;
 export type PaymentLogsProps = NativeStackScreenProps<PaymentsStackParamList, 'PaymentLogs'>;
-export type AddPaymentProps = NativeStackScreenProps<PaymentsStackParamList, 'AddPayment'>;
+export type AddPaymentProps = NativeStackScreenProps<RootStackParamList, 'AddPayment'>;
 export type LoanCalculatorProps = NativeStackScreenProps<ToolsStackParamList, 'LoanCalculator'>;
 export type SummaryViewProps = NativeStackScreenProps<ToolsStackParamList, 'SummaryView'>;
 
@@ -66,6 +74,7 @@ export interface Loan {
   startDate: string;
   endDate: string;
   status: 'Active' | 'Paid';
+  clientPhone?: string; // <-- New field for client phone number
 }
 
 // Add to your existing types.ts
