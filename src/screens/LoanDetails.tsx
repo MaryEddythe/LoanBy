@@ -106,7 +106,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
   };
 
   const handleAddPayment = () => {
-    navigation.getParent()?.navigate('PaymentsStack', {
+    navigation.getParent()?.navigate('Payments', {
       screen: 'AddPayment',
       params: {
         loanId: loan.id,
@@ -147,7 +147,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
           
           <View style={styles.amountContainer}>
             <Text style={styles.amountLabel}>Total Loan Amount</Text>
-            <Text style={styles.totalAmount}>${loan.amount.toLocaleString()}</Text>
+            <Text style={styles.totalAmount}>PHP {loan.amount.toLocaleString()}</Text>
           </View>
 
           {/* Progress Bar */}
@@ -165,11 +165,11 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
               />
             </View>
             <View style={styles.progressDetails}>
-              <Text style={styles.progressText}>
-                ${metrics.totalPaid.toLocaleString()} paid
+                <Text style={styles.progressText}>
+                PHP {metrics.totalPaid.toLocaleString()} paid
               </Text>
               <Text style={styles.progressText}>
-                ${metrics.remainingBalance.toLocaleString()} remaining
+                PHP {metrics.remainingBalance.toLocaleString()} remaining
               </Text>
             </View>
           </View>
@@ -220,7 +220,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
           
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>${metrics.totalPaid.toLocaleString()}</Text>
+              <Text style={styles.summaryValue}>PHP {metrics.totalPaid.toLocaleString()}</Text>
               <Text style={styles.summaryLabel}>Total Paid</Text>
             </View>
             
@@ -231,7 +231,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
             
             <View style={styles.summaryItem}>
               <Text style={[styles.summaryValue, styles.remainingAmount]}>
-                ${metrics.remainingBalance.toLocaleString()}
+                PHP {metrics.remainingBalance.toLocaleString()}
               </Text>
               <Text style={styles.summaryLabel}>Remaining</Text>
             </View>
@@ -263,7 +263,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
                     { backgroundColor: payment.status === 'Completed' ? '#28a745' : '#ffc107' }
                   ]} />
                   <View style={styles.paymentInfo}>
-                    <Text style={styles.paymentAmount}>${payment.amount.toLocaleString()}</Text>
+                    <Text style={styles.paymentAmount}>PHP {payment.amount.toLocaleString()}</Text>
                     <Text style={styles.paymentMethod}>{payment.method}</Text>
                   </View>
                 </View>
@@ -289,8 +289,8 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
           <Text style={styles.cardTitle}>Next Payment</Text>
           <View style={styles.nextPaymentContainer}>
             <Text style={styles.nextPaymentDate}>August 15, 2023</Text>
-            <Text style={styles.nextPaymentNote}>
-              Suggested payment: ${Math.min(500, metrics.remainingBalance).toLocaleString()}
+              <Text style={styles.nextPaymentNote}>
+              Suggested payment: PHP {Math.min(500, metrics.remainingBalance).toLocaleString()}
             </Text>
           </View>
         </View>

@@ -145,7 +145,7 @@ const ClientList = ({ navigation }: ClientListProps) => {
           {item.loanAmount && (
             <View style={styles.loanContainer}>
               <Text style={styles.loanLabel}>Loan Amount:</Text>
-              <Text style={styles.loanAmount}>${item.loanAmount.toLocaleString()}</Text>
+              <Text style={styles.loanAmount}>PHP {item.loanAmount.toLocaleString()}</Text>
             </View>
           )}
           

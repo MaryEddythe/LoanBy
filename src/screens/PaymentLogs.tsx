@@ -38,16 +38,6 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
   const [loading, setLoading] = useState(false);
   const [groupByDate, setGroupByDate] = useState(true);
 
-  // Enhanced dummy data
-  const dummyPayments: Payment[] = [
-    { id: '1', loanId: '1', amount: 500, date: '2023-12-15', method: 'Cash', status: 'Completed', description: 'Monthly payment' },
-    { id: '2', loanId: '1', amount: 500, date: '2023-12-14', method: 'Bank Transfer', status: 'Completed', description: 'Partial payment' },
-    { id: '3', loanId: '2', amount: 300, date: '2023-12-14', method: 'Mobile Money', status: 'Pending', description: 'Late payment' },
-    { id: '4', loanId: '3', amount: 750, date: '2023-12-13', method: 'Cash', status: 'Completed', description: 'Full payment' },
-    { id: '5', loanId: '2', amount: 200, date: '2023-12-12', method: 'Bank Transfer', status: 'Failed', description: 'Insufficient funds' },
-    { id: '6', loanId: '4', amount: 1000, date: '2023-12-10', method: 'Mobile Money', status: 'Completed', description: 'Settlement payment' },
-  ];
-
   const loans = [
     { id: '1', clientName: 'John Doe' },
     { id: '2', clientName: 'Jane Smith' },
@@ -67,7 +57,6 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
-      setPayments(dummyPayments);
       setLoading(false);
     }, 500);
   };
@@ -247,7 +236,7 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
           </View>
           
           <View style={styles.paymentRight}>
-            <Text style={styles.amount}>${item.amount.toLocaleString()}</Text>
+            <Text style={styles.amount}>PHP {item.amount.toLocaleString()}</Text>
             <View style={[
               styles.statusBadge,
               { backgroundColor: getStatusBackgroundColor(item.status) }
@@ -285,7 +274,7 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
     <View style={styles.groupContainer}>
       <View style={styles.groupHeader}>
         <Text style={styles.groupDate}>{formatDate(item.date)}</Text>
-        <Text style={styles.groupTotal}>${item.totalAmount.toLocaleString()}</Text>
+        <Text style={styles.groupTotal}>PHP {item.totalAmount.toLocaleString()}</Text>
       </View>
       {item.payments.map(payment => (
         <View key={payment.id} style={styles.groupedPaymentItem}>
@@ -342,7 +331,7 @@ const PaymentLogs = ({ navigation }: PaymentLogsProps) => {
       {filteredPayments.length > 0 && (
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>${summary.completedAmount.toLocaleString()}</Text>
+      <Text style={styles.summaryValue}>PHP {summary.completedAmount.toLocaleString()}</Text>
             <Text style={styles.summaryLabel}>Completed</Text>
           </View>
           <View style={styles.summaryCard}>

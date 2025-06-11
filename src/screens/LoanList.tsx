@@ -207,7 +207,7 @@ const LoanList = ({ navigation }: LoanListProps) => {
         <View style={styles.cardContent}>
           <View style={styles.amountContainer}>
             <Text style={styles.amountLabel}>Loan Amount</Text>
-            <Text style={styles.amount}>${item.loanAmount?.toLocaleString() || 0}</Text>
+            <Text style={styles.amount}>PHP {item.loanAmount?.toLocaleString() || 0}</Text>
           </View>
 
           {item.phone && (
@@ -285,7 +285,7 @@ const LoanList = ({ navigation }: LoanListProps) => {
         {filteredLoans.length > 0 && (
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total Amount</Text>
-            <Text style={styles.totalAmount}>${getTotalLoanAmount().toLocaleString()}</Text>
+        <Text style={styles.totalAmount}>PHP {getTotalLoanAmount().toLocaleString()}</Text>
           </View>
         )}
       </View>
