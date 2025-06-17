@@ -30,7 +30,7 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
     if (route.params?.client) {
       const { client } = route.params;
       setName(client.name);
-      setPhone(client.phone);
+      setPhone(client.phone || '');
       setEmployment(client.employment || '');
       setFacebookLink(client.facebookLink || '');
       setAddress(client.address || '');

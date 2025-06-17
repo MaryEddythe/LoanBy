@@ -11,45 +11,54 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoanDetailsRootProps = NativeStackScreenProps<RootStackParamList, 'LoanDetails'>;
 
 import { useFocusEffect } from '@react-navigation/native';
+
+// Define the Payment type
+type Payment = {
+  id: string;
+  loanId?: string;
+  amount: number;
+  date: string;
+  method: string;
+  status: string;
+  description?: string;
+  notes?: string;
+};
 
 const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
   const { loan } = route.params;
   const [showAllPayments, setShowAllPayments] = useState(false);
 
   // Enhanced payment history data as state
-  const [paymentHistory, setPaymentHistory] = useState([
-    { id: 'p1', amount: 500, date: '2023-06-15', method: 'Cash', status: 'Completed' },
-    { id: 'p2', amount: 500, date: '2023-07-15', method: 'Bank Transfer', status: 'Completed' },
-    { id: 'p3', amount: 300, date: '2023-08-10', method: 'Cash', status: 'Completed' },
-    { id: 'p4', amount: 200, date: '2023-09-05', method: 'Mobile Payment', status: 'Pending' },
-  ]);
+  const [paymentHistory, setPaymentHistory] = useState<Payment[]>([]);
 
-  // Listen for newPayment param when screen gains focus
+  // Load payments when screen focuses
   useFocusEffect(
     React.useCallback(() => {
-      if (route.params?.newPayment) {
-        const newPayment = route.params.newPayment;
-        setPaymentHistory(prev => [
-          {
-            id: newPayment.id,
-            loanId: newPayment.loanId,
-            amount: newPayment.amount,
-            date: newPayment.date,
-            method: newPayment.method,
-            status: newPayment.status,
-            description: newPayment.description,
-            notes: newPayment.notes,
-          },
-          ...prev,
-        ]);
-        // Remove newPayment param to avoid duplicate additions
-        navigation.setParams({ newPayment: undefined });
-      }
-    }, [route.params?.newPayment])
+      const loadPayments = async () => {
+        try {
+          const storedPayments = await AsyncStorage.getItem(`payments_${loan.id}`) || '[]';
+          const payments = JSON.parse(storedPayments);
+          setPaymentHistory(payments);
+
+          // If there's a new payment, add it to the list
+          if (route.params?.newPayment) {
+            const newPayment = route.params.newPayment;
+            setPaymentHistory(prev => [newPayment, ...prev]);
+            // Clear the newPayment param
+            navigation.setParams({ newPayment: undefined });
+          }
+        } catch (error) {
+          console.error('Failed to load payments', error);
+        }
+      };
+
+      loadPayments();
+    }, [loan.id, route.params?.newPayment])
   );
 
   const formatDate = (dateString: string) => {
@@ -140,8 +149,8 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
       params: {
         loanId: loan.id,
         clientName: loan.clientName,
-        loanAmount: loan.amount,
-      },
+        loanAmount: loan.amount
+      }
     });
   };
 

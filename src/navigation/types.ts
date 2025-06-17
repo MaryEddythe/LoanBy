@@ -33,12 +33,17 @@ export type RootStackParamList = {
   PaymentsStack: NavigatorScreenParams<PaymentsStackParamList>;
   ToolsStack: NavigatorScreenParams<ToolsStackParamList>;
   LoanList: undefined;
-  LoanDetails: { loan: Loan; newPayment?: Payment };
+  LoanDetails: {
+    loan: Loan;
+    newPayment?: Payment;
+  };
   CreateLoan: undefined;
   AddPayment: {
     loanId: string;
     clientName: string;
     loanAmount: number;
+    startDate: string;
+    endDate: string;
   };
   Payments: NavigatorScreenParams<PaymentsStackParamList>;
 };
@@ -81,9 +86,9 @@ export interface Payment {
   id: string;
   loanId: string;
   amount: number;
-  date: string;
   method: string;
   status: string;
+  date: string;
   description: string;
   notes?: string;
 }

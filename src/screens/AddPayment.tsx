@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AddPaymentProps } from '../navigation/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Client {
   id: string;
@@ -105,21 +106,15 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
     });
   };
 
-  const handleAddPayment = () => {
+  const handleAddPayment = async () => {
     if (!validateForm()) {
       Alert.alert('Validation Error', 'Please fill in all required fields correctly.');
       return;
     }
 
-    if (!fixedClient) {
-      Alert.alert('Error', 'Client information is missing.');
-      return;
-    }
-
     const paymentData = {
-      id: Math.random().toString(36).substr(2, 9), // generate a simple unique id
+      id: Date.now().toString(),
       loanId: fixedClient.id,
-      clientName: fixedClient.name,
       amount: parseFloat(amount),
       method,
       status,
@@ -128,36 +123,32 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
       notes: notes.trim(),
     };
 
-    Alert.alert(
-      'Confirm Payment',
-      `Record payment of $${parseFloat(amount).toLocaleString()} from ${fixedClient.name}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Confirm', 
-          onPress: () => {
-            // Here you would save the payment data
-            console.log('Payment recorded:', paymentData);
-            Alert.alert('Success', 'Payment recorded successfully!', [
-              {
-                text: 'OK',
-                onPress: () => navigation.navigate('LoanDetails', {
-                  loan: {
-                    id: fixedClient.id,
-                    clientName: fixedClient.name,
-                    amount: fixedClient.loanAmount,
-                    startDate: new Date().toISOString(), // Add required startDate
-                    endDate: new Date().toISOString(), // Add required endDate
-                    status: 'Active', // Add required status
-                  },
-                  newPayment: paymentData
-                })
-              }
-            ]);
-          }
-        }
-      ]
-    );
+    try {
+      // Get existing payments for this loan
+      const storedPayments = await AsyncStorage.getItem(`payments_${fixedClient.id}`) || '[]';
+      const payments = JSON.parse(storedPayments);
+      
+      // Add new payment
+      payments.unshift(paymentData);
+      
+      // Save updated payments
+      await AsyncStorage.setItem(`payments_${fixedClient.id}`, JSON.stringify(payments));
+
+      // Return to loan details with new payment data
+      navigation.navigate('LoanDetails', {
+        loan: {
+          id: fixedClient.id,
+          clientName: fixedClient.name,
+          amount: fixedClient.loanAmount,
+          startDate: route.params.startDate,
+          endDate: route.params.endDate,
+          status: 'Active'
+        },
+        newPayment: paymentData
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save payment');
+    }
   };
 
   const renderMethodButton = (methodData: typeof paymentMethods[0]) => (
