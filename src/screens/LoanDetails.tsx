@@ -14,17 +14,43 @@ import { RootStackParamList } from '../navigation/types';
 
 type LoanDetailsRootProps = NativeStackScreenProps<RootStackParamList, 'LoanDetails'>;
 
+import { useFocusEffect } from '@react-navigation/native';
+
 const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
   const { loan } = route.params;
   const [showAllPayments, setShowAllPayments] = useState(false);
 
-  // Enhanced payment history data
-  const paymentHistory = [
+  // Enhanced payment history data as state
+  const [paymentHistory, setPaymentHistory] = useState([
     { id: 'p1', amount: 500, date: '2023-06-15', method: 'Cash', status: 'Completed' },
     { id: 'p2', amount: 500, date: '2023-07-15', method: 'Bank Transfer', status: 'Completed' },
     { id: 'p3', amount: 300, date: '2023-08-10', method: 'Cash', status: 'Completed' },
     { id: 'p4', amount: 200, date: '2023-09-05', method: 'Mobile Payment', status: 'Pending' },
-  ];
+  ]);
+
+  // Listen for newPayment param when screen gains focus
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params?.newPayment) {
+        const newPayment = route.params.newPayment;
+        setPaymentHistory(prev => [
+          {
+            id: newPayment.id,
+            loanId: newPayment.loanId,
+            amount: newPayment.amount,
+            date: newPayment.date,
+            method: newPayment.method,
+            status: newPayment.status,
+            description: newPayment.description,
+            notes: newPayment.notes,
+          },
+          ...prev,
+        ]);
+        // Remove newPayment param to avoid duplicate additions
+        navigation.setParams({ newPayment: undefined });
+      }
+    }, [route.params?.newPayment])
+  );
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Not set';

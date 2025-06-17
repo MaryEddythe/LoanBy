@@ -167,19 +167,16 @@ const LoanList = ({ navigation }: LoanListProps) => {
 
   const renderItem = ({ item }: { item: LoanWithClient }) => {
     // Map local status to Loan type status
-    let mappedStatus: "Active" | "Paid";
-    if (item.loanStatus === "Active" || item.loanStatus === "Overdue") {
-      mappedStatus = "Active";
-    } else {
-      mappedStatus = "Paid";
-    }
+    const mappedStatus: "Active" | "Paid" = 
+      item.loanStatus === "Completed" ? "Paid" : "Active";
 
     const loan = {
       id: item.id,
       clientName: item.name,
+      clientPhone: item.phone,
       amount: item.loanAmount || 0,
-      startDate: item.startDate || '',
-      endDate: item.endDate || '',
+      startDate: item.startDate || new Date().toISOString(),
+      endDate: item.endDate || new Date().toISOString(),
       status: mappedStatus,
     };
 

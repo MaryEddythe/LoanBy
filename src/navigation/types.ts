@@ -33,7 +33,7 @@ export type RootStackParamList = {
   PaymentsStack: NavigatorScreenParams<PaymentsStackParamList>;
   ToolsStack: NavigatorScreenParams<ToolsStackParamList>;
   LoanList: undefined;
-  LoanDetails: { loan: Loan };
+  LoanDetails: { loan: Loan; newPayment?: Payment };
   CreateLoan: undefined;
   AddPayment: {
     loanId: string;
@@ -58,33 +58,34 @@ export type SummaryViewProps = NativeStackScreenProps<ToolsStackParamList, 'Summ
 export interface Client {
   id: string;
   name: string;
-  phone: string;
+  phone?: string;
   employment?: string;
   facebookLink?: string;
-  email?: string;
   address?: string;
-  loanAmount?: number; // <-- New field for loan amount
-  startDate?: string; // <-- New field for loan start date
-  endDate?: string;   // <-- New field for loan end date
+  loanAmount?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface Loan {
   id: string;
   clientName: string;
+  clientPhone?: string;
   amount: number;
   startDate: string;
   endDate: string;
   status: 'Active' | 'Paid';
-  clientPhone?: string; // <-- New field for client phone number
 }
 
-// Add to your existing types.ts
 export interface Payment {
   id: string;
   loanId: string;
   amount: number;
   date: string;
   method: string;
+  status: string;
+  description: string;
+  notes?: string;
 }
 
 export interface CalculatorResult {

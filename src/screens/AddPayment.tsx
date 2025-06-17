@@ -117,7 +117,8 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
     }
 
     const paymentData = {
-      clientId: fixedClient.id,
+      id: Math.random().toString(36).substr(2, 9), // generate a simple unique id
+      loanId: fixedClient.id,
       clientName: fixedClient.name,
       amount: parseFloat(amount),
       method,
@@ -138,7 +139,20 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
             // Here you would save the payment data
             console.log('Payment recorded:', paymentData);
             Alert.alert('Success', 'Payment recorded successfully!', [
-              { text: 'OK', onPress: () => navigation.goBack() }
+              {
+                text: 'OK',
+                onPress: () => navigation.navigate('LoanDetails', {
+                  loan: {
+                    id: fixedClient.id,
+                    clientName: fixedClient.name,
+                    amount: fixedClient.loanAmount,
+                    startDate: new Date().toISOString(), // Add required startDate
+                    endDate: new Date().toISOString(), // Add required endDate
+                    status: 'Active', // Add required status
+                  },
+                  newPayment: paymentData
+                })
+              }
             ]);
           }
         }
