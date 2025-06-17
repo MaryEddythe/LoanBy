@@ -45,15 +45,31 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
           const payments = JSON.parse(storedPayments);
           setPaymentHistory(payments);
 
-          // If there's a new payment, add it to the list
+          // If there's a new payment, add it to the list and save to storage
           if (route.params?.newPayment) {
             const newPayment = route.params.newPayment;
-            setPaymentHistory(prev => [newPayment, ...prev]);
+            const updatedPayments = [newPayment, ...payments];
+            
+            // Save updated payments to AsyncStorage
+            await AsyncStorage.setItem(
+              `payments_${loan.id}`,
+              JSON.stringify(updatedPayments)
+            );
+            
+            setPaymentHistory(updatedPayments);
+
+            // Show success message
+            Alert.alert(
+              'Success',
+              `Payment of PHP ${newPayment.amount.toLocaleString()} recorded successfully`
+            );
+
             // Clear the newPayment param
             navigation.setParams({ newPayment: undefined });
           }
         } catch (error) {
-          console.error('Failed to load payments', error);
+          console.error('Failed to load/save payments', error);
+          Alert.alert('Error', 'Failed to update payment history');
         }
       };
 
