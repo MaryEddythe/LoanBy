@@ -40,6 +40,7 @@ export type RootStackParamList = {
     clientName: string;
     loanAmount: number;
   };
+  Payments: NavigatorScreenParams<PaymentsStackParamList>;
 };
 
 // Screen props types
