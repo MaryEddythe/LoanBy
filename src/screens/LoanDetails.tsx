@@ -9,9 +9,12 @@ import {
   StatusBar,
   Linking
 } from 'react-native';
-import { LoanDetailsProps } from '../navigation/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
+type LoanDetailsRootProps = NativeStackScreenProps<RootStackParamList, 'LoanDetails'>;
+
+const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
   const { loan } = route.params;
   const [showAllPayments, setShowAllPayments] = useState(false);
 
@@ -106,13 +109,10 @@ const LoanDetails = ({ route, navigation }: LoanDetailsProps) => {
   };
 
   const handleAddPayment = () => {
-    navigation.getParent()?.navigate('Payments', {
-      screen: 'AddPayment',
-      params: {
-        loanId: loan.id,
-        clientName: loan.clientName,
-        loanAmount: loan.amount,
-      },
+    navigation.navigate('AddPayment', { 
+      loanId: loan.id,
+      clientName: loan.clientName,
+      loanAmount: loan.amount
     });
   };
 

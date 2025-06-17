@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -12,17 +12,16 @@ import {
   StatusBar
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
 import { AddPaymentProps } from '../navigation/types';
 
 interface Client {
   id: string;
   name: string;
-  loanAmount?: number;
+  loanAmount: number;
 }
 
-const AddPayment = ({ navigation }: AddPaymentProps) => {
-  const [selectedClient, setSelectedClient] = useState('');
+const AddPayment = ({ navigation, route }: AddPaymentProps) => {
+  const { loanId, clientName, loanAmount } = route.params;
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('Cash');
   const [status, setStatus] = useState('Completed');
@@ -31,14 +30,11 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
   const [notes, setNotes] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Mock client data - replace with actual data from your storage
-  const clients: Client[] = [
-    { id: '1', name: 'John Doe', loanAmount: 5000 },
-    { id: '2', name: 'Jane Smith', loanAmount: 3000 },
-    { id: '3', name: 'Mike Johnson', loanAmount: 7500 },
-    { id: '4', name: 'Sarah Wilson', loanAmount: 2000 },
-  ];
+  const [fixedClient] = useState<Client>({ 
+    id: loanId, 
+    name: clientName, 
+    loanAmount: loanAmount 
+  });
 
   const paymentMethods = [
     { value: 'Cash', icon: '💵', color: '#28a745' },
@@ -80,10 +76,6 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!selectedClient) {
-      newErrors.client = 'Please select a client';
-    }
-
     if (!amount || parseFloat(amount) <= 0) {
       newErrors.amount = 'Please enter a valid amount';
     }
@@ -113,20 +105,20 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
     });
   };
 
-  const getSelectedClient = () => {
-    return clients.find(client => client.id === selectedClient);
-  };
-
   const handleAddPayment = () => {
     if (!validateForm()) {
       Alert.alert('Validation Error', 'Please fill in all required fields correctly.');
       return;
     }
 
-    const client = getSelectedClient();
+    if (!fixedClient) {
+      Alert.alert('Error', 'Client information is missing.');
+      return;
+    }
+
     const paymentData = {
-      clientId: selectedClient,
-      clientName: client?.name,
+      clientId: fixedClient.id,
+      clientName: fixedClient.name,
       amount: parseFloat(amount),
       method,
       status,
@@ -137,7 +129,7 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
 
     Alert.alert(
       'Confirm Payment',
-      `Record payment of $${parseFloat(amount).toLocaleString()} from ${client?.name}?`,
+      `Record payment of $${parseFloat(amount).toLocaleString()} from ${fixedClient.name}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -212,44 +204,17 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
           <Text style={styles.subtitle}>Add a new payment record</Text>
         </View>
 
-        {/* Client Selection */}
+        {/* Client Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Client Information</Text>
-          
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Select Client *</Text>
-            <View style={[
-              styles.pickerContainer,
-              errors.client && styles.inputError
-            ]}>
-              <Picker
-                selectedValue={selectedClient}
-                onValueChange={setSelectedClient}
-                style={styles.picker}
-              >
-                <Picker.Item label="Choose a client..." value="" />
-                {clients.map(client => (
-                  <Picker.Item 
-                    key={client.id} 
-                    label={`${client.name} (Loan: $${client.loanAmount?.toLocaleString() || 0})`} 
-                    value={client.id} 
-                  />
-                ))}
-              </Picker>
-            </View>
-            {errors.client && <Text style={styles.errorText}>{errors.client}</Text>}
+          <View style={styles.clientInfo}>
+            <Text style={styles.clientInfoText}>
+              Client: {fixedClient.name}
+            </Text>
+            <Text style={styles.clientLoanAmount}>
+              Loan Amount: PHP {fixedClient.loanAmount.toLocaleString()}
+            </Text>
           </View>
-
-          {selectedClient && (
-            <View style={styles.clientInfo}>
-              <Text style={styles.clientInfoText}>
-                Selected: {getSelectedClient()?.name}
-              </Text>
-              <Text style={styles.clientLoanAmount}>
-                Loan Amount: ${getSelectedClient()?.loanAmount?.toLocaleString() || 0}
-              </Text>
-            </View>
-          )}
         </View>
 
         {/* Payment Details */}
@@ -363,10 +328,10 @@ const AddPayment = ({ navigation }: AddPaymentProps) => {
         <TouchableOpacity 
           style={[
             styles.saveButton,
-            (!selectedClient || !amount || !description.trim()) && styles.saveButtonDisabled
+            (!fixedClient || !amount || !description.trim()) && styles.saveButtonDisabled
           ]} 
           onPress={handleAddPayment}
-          disabled={!selectedClient || !amount || !description.trim()}
+          disabled={!fixedClient || !amount || !description.trim()}
         >
           <Text style={styles.saveButtonText}>Record Payment</Text>
         </TouchableOpacity>
