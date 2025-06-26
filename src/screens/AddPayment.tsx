@@ -142,7 +142,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
             onPress: () => {
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'LoanList' }]
+                routes: [{ name: 'LoanDetails', params: { loanId: loanId, clientName: clientName, loanAmount: loanAmount, startDate: route.params.startDate, endDate: route.params.endDate } }]
               });
             }
           }
