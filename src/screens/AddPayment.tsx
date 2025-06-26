@@ -22,7 +22,7 @@ interface Client {
 }
 
 const AddPayment = ({ navigation, route }: AddPaymentProps) => {
-  const { loanId, clientName, loanAmount } = route.params;
+  const { loanId, clientName, loanAmount, startDate, endDate, interestAmount, interestPercent, clientPhone } = route.params;
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('Cash');
   const [status, setStatus] = useState('Completed');
@@ -40,9 +40,8 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
   const paymentMethods = [
     { value: 'Cash', icon: '💵', color: '#28a745' },
     { value: 'Bank Transfer', icon: '🏦', color: '#007bff' },
-    { value: 'Mobile Money', icon: '📱', color: '#fd7e14' },
-    { value: 'Check', icon: '📝', color: '#6f42c1' },
-    { value: 'Credit Card', icon: '💳', color: '#dc3545' },
+    { value: 'GCash', icon: '📱', color: '#fd7e14' },
+    { value: 'ATM Card', icon: '📝', color: '#6f42c1' },  
   ];
 
   const paymentStatuses = [
@@ -132,7 +131,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
       // Save to storage
       await AsyncStorage.setItem(`payments_${fixedClient.id}`, JSON.stringify(payments));
 
-      // Show success alert and navigate after user clicks OK
+      // Show alert, then navigate to LoanDetails with all loan fields
       Alert.alert(
         'Payment Recorded!',
         `Payment of PHP ${parseFloat(amount).toLocaleString()} has been successfully recorded.`,
@@ -140,13 +139,24 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
           {
             text: 'OK',
             onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'LoanDetails', params: { loanId: loanId, clientName: clientName, loanAmount: loanAmount, startDate: route.params.startDate, endDate: route.params.endDate } }]
+              navigation.navigate('LoanDetails', {
+                loan: {
+                  id: fixedClient.id,
+                  clientName: fixedClient.name,
+                  clientPhone: clientPhone || '',
+                  amount: fixedClient.loanAmount,
+                  startDate: startDate,
+                  endDate: endDate,
+                  interestAmount: interestAmount,
+                  interestPercent: interestPercent,
+                  status: 'Active'
+                },
+                newPayment: paymentData
               });
             }
           }
-        ]
+        ],
+        { cancelable: false }
       );
     } catch (error) {
       Alert.alert('Error', 'Failed to save payment');

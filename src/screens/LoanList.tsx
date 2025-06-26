@@ -173,10 +173,12 @@ const LoanList = ({ navigation }: LoanListProps) => {
     const loan = {
       id: item.id,
       clientName: item.name,
-      clientPhone: item.phone,
+      clientPhone: item.phone || '',
       amount: item.loanAmount || 0,
       startDate: item.startDate || new Date().toISOString(),
       endDate: item.endDate || new Date().toISOString(),
+      interestAmount: item.interestAmount,
+      interestPercent: item.interestPercent,
       status: mappedStatus,
     };
 

@@ -8,7 +8,7 @@ import {
 
 // Clients Screens
 import ClientList from '../screens/ClientList';
-import AddEditClient from '../screens/AddEditClient';
+import { AddEditClient } from '../screens/AddEditClient';
 
 // Loans Screens
 import LoanList from '../screens/LoanList';

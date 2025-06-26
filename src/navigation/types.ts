@@ -18,6 +18,9 @@ export type LoansStackParamList = {
     loanAmount: number;
     startDate: string;
     endDate: string;
+    interestAmount?: number;
+    interestPercent?: number;
+    clientPhone?: string;
   };
 };
 
@@ -51,6 +54,9 @@ export type RootStackParamList = {
     loanAmount: number;
     startDate: string;
     endDate: string;
+    interestAmount?: number;
+    interestPercent?: number;
+    clientPhone?: string;
   };
   Payments: NavigatorScreenParams<PaymentsStackParamList>;
 };
@@ -75,6 +81,8 @@ export interface Client {
   facebookLink?: string;
   address?: string;
   loanAmount?: number;
+  interestAmount?: number;
+  interestPercent?: number;
   startDate?: string;
   endDate?: string;
 }
@@ -84,6 +92,8 @@ export interface Loan {
   clientName: string;
   clientPhone?: string;
   amount: number;
+  interestAmount?: number;
+  interestPercent?: number;
   startDate: string;
   endDate: string;
   status: 'Active' | 'Paid';

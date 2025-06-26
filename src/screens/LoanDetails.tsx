@@ -202,6 +202,18 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
             <Text style={styles.amountLabel}>Total Loan Amount</Text>
             <Text style={styles.totalAmount}>PHP {loan.amount.toLocaleString()}</Text>
           </View>
+          <View style={styles.amountContainer}>
+            <Text style={styles.amountLabel}>Interest Amount</Text>
+            <Text style={styles.totalAmount}>
+              PHP {loan.interestAmount !== undefined ? loan.interestAmount.toLocaleString() : 'N/A'}
+            </Text>
+          </View>
+          <View style={styles.amountContainer}>
+            <Text style={styles.amountLabel}>Interest Percent</Text>
+            <Text style={styles.totalAmount}>
+              {loan.interestPercent !== undefined ? loan.interestPercent.toFixed(2) + '%' : 'N/A'}
+            </Text>
+          </View>
 
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
@@ -363,7 +375,7 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
   );
 };
 
-// ... (rest of the styles remain the same)
+// No changes needed if you already pass all required fields in the loan object.
 const styles = StyleSheet.create({
   container: {
     flex: 1,

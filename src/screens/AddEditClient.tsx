@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { AddEditClientProps } from '../navigation/types';
 import { Client } from '../navigation/types';
 
@@ -21,10 +20,12 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
   const [facebookLink, setFacebookLink] = useState('');
   const [address, setAddress] = useState('');
   const [loanAmount, setLoanAmount] = useState('');
+  const [interestAmount, setInterestAmount] = useState('');
+  const [interestPercent, setInterestPercent] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
+  const [startDateInput, setStartDateInput] = useState('');
+  const [endDateInput, setEndDateInput] = useState('');
 
   useEffect(() => {
     if (route.params?.client) {
@@ -35,28 +36,17 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
       setFacebookLink(client.facebookLink || '');
       setAddress(client.address || '');
       setLoanAmount(client.loanAmount?.toString() || '');
+      setInterestAmount(client.interestAmount?.toString() || '');
+      setInterestPercent(client.interestPercent?.toString() || '');
       setStartDate(client.startDate ? new Date(client.startDate) : undefined);
       setEndDate(client.endDate ? new Date(client.endDate) : undefined);
     }
   }, [route.params]);
 
-  const onChangeStartDate = (event: any, selectedDate?: Date) => {
-    if (event.type === 'set' && selectedDate) {
-      setStartDate(selectedDate);
-    }
-    if (Platform.OS !== 'ios') {
-      setShowStartPicker(false);
-    }
-  };
-
-  const onChangeEndDate = (event: any, selectedDate?: Date) => {
-    if (event.type === 'set' && selectedDate) {
-      setEndDate(selectedDate);
-    }
-    if (Platform.OS !== 'ios') {
-      setShowEndPicker(false);
-    }
-  };
+  useEffect(() => {
+    setStartDateInput(startDate ? startDate.toISOString().slice(0, 10) : '');
+    setEndDateInput(endDate ? endDate.toISOString().slice(0, 10) : '');
+  }, [startDate, endDate]);
 
   // Helper function to format date as "Month day year"
   const formatDate = (date: Date) => {
@@ -66,6 +56,26 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
       day: 'numeric' 
     };
     return date.toLocaleDateString(undefined, options);
+  };
+
+  // Helper to format and mask date input as YYYY-MM-DD
+  const handleDateInput = (text: string, setDate: (d: Date | undefined) => void) => {
+    // Remove non-numeric except dash
+    let cleaned = text.replace(/[^\d-]/g, '');
+    // Auto-insert dashes
+    if (cleaned.length > 4 && cleaned[4] !== '-') cleaned = cleaned.slice(0, 4) + '-' + cleaned.slice(4);
+    if (cleaned.length > 7 && cleaned[7] !== '-') cleaned = cleaned.slice(0, 7) + '-' + cleaned.slice(7);
+    if (cleaned.length > 10) cleaned = cleaned.slice(0, 10);
+
+    // Set date if valid, else undefined
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cleaned)) {
+      const d = new Date(cleaned);
+      if (!isNaN(d.getTime())) setDate(d);
+      else setDate(undefined);
+    } else {
+      setDate(undefined);
+    }
+    return cleaned;
   };
 
   const saveClient = async () => {
@@ -82,6 +92,8 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
       facebookLink: facebookLink.trim(),
       address: address.trim(),
       loanAmount: loanAmount ? parseFloat(loanAmount) : undefined,
+      interestAmount: interestAmount ? parseFloat(interestAmount) : undefined,
+      interestPercent: interestPercent ? parseFloat(interestPercent) : undefined,
       startDate: startDate ? startDate.toISOString() : undefined,
       endDate: endDate ? endDate.toISOString() : undefined,
     };
@@ -200,57 +212,62 @@ const AddEditClient = ({ navigation, route }: AddEditClientProps) => {
               placeholderTextColor="#999"
             />
           </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Interest Amount</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter interest amount"
+              value={interestAmount}
+              onChangeText={setInterestAmount}
+              keyboardType="numeric"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Interest Percent</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter interest percent"
+              value={interestPercent}
+              onChangeText={setInterestPercent}
+              keyboardType="numeric"
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <View style={styles.dateRow}>
-            <View style={styles.dateContainer}>
-              <Text style={styles.label}>Start Date</Text>
-              <TouchableOpacity 
-                onPress={() => setShowStartPicker(true)} 
-                style={[styles.datePickerButton, startDate && styles.datePickerButtonSelected]}
-              >
-                <Text style={[
-                  styles.datePickerText, 
-                  startDate ? styles.datePickerTextSelected : styles.datePickerTextPlaceholder
-                ]}>
-                  {startDate ? formatDate(startDate) : 'Select Start Date'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.dateContainer}>
-              <Text style={styles.label}>End Date</Text>
-              <TouchableOpacity 
-                onPress={() => setShowEndPicker(true)} 
-                style={[styles.datePickerButton, endDate && styles.datePickerButtonSelected]}
-              >
-                <Text style={[
-                  styles.datePickerText, 
-                  endDate ? styles.datePickerTextSelected : styles.datePickerTextPlaceholder
-                ]}>
-                  {endDate ? formatDate(endDate) : 'Select End Date'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Start Date</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              value={startDateInput}
+              keyboardType="numbers-and-punctuation"
+              onChangeText={text => {
+                const masked = handleDateInput(text, setStartDate);
+                setStartDateInput(masked);
+              }}
+              placeholderTextColor="#999"
+              maxLength={10}
+            />
+            <Text style={{ color: '#999', fontSize: 12, marginTop: 2 }}>Format: YYYY-MM-DD</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>End Date</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              value={endDateInput}
+              keyboardType="numbers-and-punctuation"
+              onChangeText={text => {
+                const masked = handleDateInput(text, setEndDate);
+                setEndDateInput(masked);
+              }}
+              placeholderTextColor="#999"
+              maxLength={10}
+            />
+            <Text style={{ color: '#999', fontSize: 12, marginTop: 2 }}>Format: YYYY-MM-DD</Text>
           </View>
         </View>
-
-        {showStartPicker && (
-          <DateTimePicker
-            value={startDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={onChangeStartDate}
-          />
-        )}
-
-        {showEndPicker && (
-          <DateTimePicker
-            value={endDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={onChangeEndDate}
-          />
-        )}
       </ScrollView>
 
       <View style={styles.buttonContainer}>
@@ -333,37 +350,6 @@ const styles = StyleSheet.create({
     height: 80,
     paddingTop: 12,
   },
-  dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  dateContainer: {
-    flex: 1,
-  },
-  datePickerButton: {
-    height: 50,
-    justifyContent: 'center',
-    borderColor: '#dee2e6',
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#fff',
-  },
-  datePickerButtonSelected: {
-    borderColor: '#3b82f6',
-    backgroundColor: '#f8f9ff',
-  },
-  datePickerText: {
-    fontSize: 16,
-  },
-  datePickerTextSelected: {
-    color: '#212529',
-    fontWeight: '500',
-  },
-  datePickerTextPlaceholder: {
-    color: '#999',
-  },
   buttonContainer: {
     flexDirection: 'row',
     paddingHorizontal: 20,
@@ -400,3 +386,4 @@ const styles = StyleSheet.create({
 });
 
 export default AddEditClient;
+export { AddEditClient };
