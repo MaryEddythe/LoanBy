@@ -160,13 +160,12 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
   };
 
   const handleAddPayment = () => {
-    navigation.navigate('Payments', {
-      screen: 'AddPayment',
-      params: {
-        loanId: loan.id,
-        clientName: loan.clientName,
-        loanAmount: loan.amount
-      }
+    navigation.navigate('AddPayment', {
+      loanId: loan.id,
+      clientName: loan.clientName,
+      loanAmount: loan.amount,
+      startDate: loan.startDate,
+      endDate: loan.endDate
     });
   };
 

@@ -112,40 +112,42 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
       return;
     }
 
-    const paymentData = {
-      id: Date.now().toString(),
-      loanId: fixedClient.id,
-      amount: parseFloat(amount),
-      method,
-      status,
-      date: date.toISOString(),
-      description: description.trim(),
-      notes: notes.trim(),
-    };
-
     try {
-      // Get existing payments for this loan
+      const paymentData = {
+        id: Date.now().toString(),
+        loanId: fixedClient.id,
+        amount: parseFloat(amount),
+        method,
+        status,
+        date: date.toISOString(),
+        description: description.trim(),
+        notes: notes.trim(),
+      };
+
+      // Get existing payments and add new payment
       const storedPayments = await AsyncStorage.getItem(`payments_${fixedClient.id}`) || '[]';
       const payments = JSON.parse(storedPayments);
-      
-      // Add new payment
       payments.unshift(paymentData);
       
-      // Save updated payments
+      // Save to storage
       await AsyncStorage.setItem(`payments_${fixedClient.id}`, JSON.stringify(payments));
 
-      // Return to loan details with new payment data
-      navigation.navigate('LoanDetails', {
-        loan: {
-          id: fixedClient.id,
-          clientName: fixedClient.name,
-          amount: fixedClient.loanAmount,
-          startDate: route.params.startDate,
-          endDate: route.params.endDate,
-          status: 'Active'
-        },
-        newPayment: paymentData
-      });
+      // Show success alert and navigate after user clicks OK
+      Alert.alert(
+        'Payment Recorded!',
+        `Payment of PHP ${parseFloat(amount).toLocaleString()} has been successfully recorded.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'LoanList' }]
+              });
+            }
+          }
+        ]
+      );
     } catch (error) {
       Alert.alert('Error', 'Failed to save payment');
     }

@@ -12,6 +12,13 @@ export type LoansStackParamList = {
   LoanList: undefined;
   CreateLoan: undefined;
   LoanDetails: { loan: Loan };
+  AddPayment: {
+    loanId: string;
+    clientName: string;
+    loanAmount: number;
+    startDate: string;
+    endDate: string;
+  };
 };
 
 // Payments Stack

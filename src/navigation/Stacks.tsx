@@ -2,8 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { 
   ClientsStackParamList, 
-  LoansStackParamList, 
-  PaymentsStackParamList, 
+  LoansStackParamList,
   ToolsStackParamList 
 } from './types';
 
@@ -15,9 +14,6 @@ import AddEditClient from '../screens/AddEditClient';
 import LoanList from '../screens/LoanList';
 import CreateLoan from '../screens/CreateLoan';
 import LoanDetails from '../screens/LoanDetails';
-
-// Payments Screens
-import PaymentLogs from '../screens/PaymentLogs';
 import AddPayment from '../screens/AddPayment';
 
 // Tools Screens
@@ -26,7 +22,6 @@ import SummaryView from '../screens/SummaryView';
 
 export const ClientsStack = createNativeStackNavigator<ClientsStackParamList>();
 export const LoansStack = createNativeStackNavigator<LoansStackParamList>();
-export const PaymentsStack = createNativeStackNavigator<PaymentsStackParamList>();
 export const ToolsStack = createNativeStackNavigator<ToolsStackParamList>();
 
 export const ClientsStackScreen = () => (
@@ -41,14 +36,8 @@ export const LoansStackScreen = () => (
     <LoansStack.Screen name="LoanList" component={LoanList} options={{ title: 'Loan List' }} />
     <LoansStack.Screen name="CreateLoan" component={CreateLoan} options={{ title: 'Create Loan' }} />
     <LoansStack.Screen name="LoanDetails" component={LoanDetails} options={{ title: 'Loan Details' }} />
+    <LoansStack.Screen name="AddPayment" component={AddPayment} options={{ title: 'Add Payment' }} />
   </LoansStack.Navigator>
-);
-
-export const PaymentsStackScreen = () => (
-  <PaymentsStack.Navigator>
-    <PaymentsStack.Screen name="PaymentLogs" component={PaymentLogs} options={{ title: 'Payment Logs' }} />
-    <PaymentsStack.Screen name="AddPayment" component={AddPayment} options={{ title: 'Add Payment' }} />
-  </PaymentsStack.Navigator>
 );
 
 export const ToolsStackScreen = () => (
