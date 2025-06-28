@@ -9,8 +9,6 @@ const CreateLoan = ({ navigation }: CreateLoanProps) => {
   const [term, setTerm] = useState('');
   
   const handleCreateLoan = () => {
-    // Here you would save the loan to your storage
-    // For now, just navigate back
     navigation.goBack();
   };
 

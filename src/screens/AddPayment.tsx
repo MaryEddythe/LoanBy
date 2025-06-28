@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import uuid from 'react-native-uuid';
 import { 
   View, 
   Text, 
@@ -106,6 +107,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
   };
 
   const handleAddPayment = async () => {
+    console.log('handleAddPayment called');
     if (!validateForm()) {
       Alert.alert('Validation Error', 'Please fill in all required fields correctly.');
       return;
@@ -113,7 +115,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
 
     try {
       const paymentData = {
-        id: Date.now().toString(),
+        id: uuid.v4() as string, // Generate a unique ID using react-native-uuid
         loanId: fixedClient.id,
         amount: parseFloat(amount),
         method,
@@ -123,13 +125,17 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
         notes: notes.trim(),
       };
 
+      console.log('Payment data to save:', paymentData);
+
       // Get existing payments and add new payment
       const storedPayments = await AsyncStorage.getItem(`payments_${fixedClient.id}`) || '[]';
       const payments = JSON.parse(storedPayments);
+      console.log('Existing payments:', payments);
       payments.unshift(paymentData);
-      
+
       // Save to storage
       await AsyncStorage.setItem(`payments_${fixedClient.id}`, JSON.stringify(payments));
+      console.log('Payment saved to AsyncStorage');
 
       // Show alert, then navigate to LoanDetails with all loan fields
       Alert.alert(
@@ -139,6 +145,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
           {
             text: 'OK',
             onPress: () => {
+              console.log('Navigating to LoanDetails with new payment');
               navigation.navigate('LoanDetails', {
                 loan: {
                   id: fixedClient.id,
@@ -159,50 +166,51 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
         { cancelable: false }
       );
     } catch (error) {
+      console.error('Error saving payment:', error);
       Alert.alert('Error', 'Failed to save payment');
     }
   };
 
   const renderMethodButton = (methodData: typeof paymentMethods[0]) => (
-    <TouchableOpacity
-      key={methodData.value}
-      style={[
-        styles.methodButton,
-        method === methodData.value && styles.methodButtonActive,
-        { borderColor: methodData.color }
-      ]}
-      onPress={() => setMethod(methodData.value)}
-    >
-      <Text style={styles.methodIcon}>{methodData.icon}</Text>
-      <Text style={[
-        styles.methodText,
-        method === methodData.value && { color: methodData.color }
-      ]}>
-        {methodData.value}
-      </Text>
-    </TouchableOpacity>
-  );
+      <TouchableOpacity
+        key={methodData.value}
+        style={[
+          styles.methodButton,
+          method === methodData.value && styles.methodButtonActive,
+          { borderColor: methodData.color }
+        ]}
+        onPress={() => setMethod(methodData.value)}
+      >
+        <Text style={styles.methodIcon}>{methodData.icon}</Text>
+        <Text style={[
+          styles.methodText,
+          method === methodData.value && { color: methodData.color }
+        ]}>
+          {methodData.value}
+        </Text>
+      </TouchableOpacity>
+    );
 
-  const renderStatusButton = (statusData: typeof paymentStatuses[0]) => (
-    <TouchableOpacity
-      key={statusData.value}
-      style={[
-        styles.statusButton,
-        status === statusData.value && { 
-          backgroundColor: statusData.bg,
-          borderColor: statusData.color 
-        }
-      ]}
-      onPress={() => setStatus(statusData.value)}
-    >
-      <Text style={[
-        styles.statusText,
-        status === statusData.value && { color: statusData.color }
-      ]}>
-        {statusData.value}
-      </Text>
-    </TouchableOpacity>
-  );
+    const renderStatusButton = (statusData: typeof paymentStatuses[0]) => (
+      <TouchableOpacity
+        key={statusData.value}
+        style={[
+          styles.statusButton,
+          status === statusData.value && {
+            backgroundColor: statusData.bg,
+            borderColor: statusData.color
+          }
+        ]}
+        onPress={() => setStatus(statusData.value)}
+      >
+        <Text style={[
+          styles.statusText,
+          status === statusData.value && { color: statusData.color }
+        ]}>
+          {statusData.value}
+        </Text>
+      </TouchableOpacity>
+    );
 
   return (
     <KeyboardAvoidingView 
@@ -254,7 +262,7 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
             />
             {amount && (
               <Text style={styles.amountDisplay}>
-                ${parseFloat(amount || '0').toLocaleString()}
+                PHP {parseFloat(amount || '0').toLocaleString()}
               </Text>
             )}
             {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}

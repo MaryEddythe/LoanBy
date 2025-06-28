@@ -42,31 +42,39 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
       const loadPayments = async () => {
         try {
           const storedPayments = await AsyncStorage.getItem(`payments_${loan.id}`) || '[]';
-          const payments = JSON.parse(storedPayments);
-          setPaymentHistory(payments);
+          let payments = JSON.parse(storedPayments);
 
-          // If there's a new payment, add it to the list and save to storage
+          // If there's a new payment, add it to the list before deduplication and saving
           if (route.params?.newPayment) {
             const newPayment = route.params.newPayment;
-            const updatedPayments = [newPayment, ...payments];
-            
-            // Save updated payments to AsyncStorage
+            payments = [newPayment, ...payments];
+          }
+
+          // Deduplicate payments by id
+          const uniquePaymentsMap = new Map<string, typeof payments[0]>();
+          for (const payment of payments) {
+            uniquePaymentsMap.set(payment.id, payment);
+          }
+          const uniquePayments = Array.from(uniquePaymentsMap.values());
+
+          // Save updated payments to AsyncStorage if newPayment was added
+          if (route.params?.newPayment) {
             await AsyncStorage.setItem(
               `payments_${loan.id}`,
-              JSON.stringify(updatedPayments)
+              JSON.stringify(uniquePayments)
             );
-            
-            setPaymentHistory(updatedPayments);
 
             // Show success message
             Alert.alert(
               'Success',
-              `Payment of PHP ${newPayment.amount.toLocaleString()} recorded successfully`
+              `Payment of PHP ${route.params.newPayment.amount.toLocaleString()} recorded successfully`
             );
 
             // Clear the newPayment param
             navigation.setParams({ newPayment: undefined });
           }
+
+          setPaymentHistory(uniquePayments);
         } catch (error) {
           console.error('Failed to load/save payments', error);
           Alert.alert('Error', 'Failed to update payment history');
