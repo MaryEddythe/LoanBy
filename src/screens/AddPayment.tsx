@@ -47,9 +47,9 @@ const AddPayment = ({ navigation, route }: AddPaymentProps) => {
 
   const paymentStatuses = [
     { value: 'Completed', color: '#28a745', bg: '#d4edda' },
-    { value: 'Pending', color: '#ffc107', bg: '#fff3cd' },
-    { value: 'Failed', color: '#dc3545', bg: '#f8d7da' },
   ];
+  
+  // Force status to 'Completed' when adding payment
 
   const formatAmount = (value: string) => {
     // Remove non-numeric characters except decimal point

@@ -64,12 +64,6 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
               JSON.stringify(uniquePayments)
             );
 
-            // Show success message
-            Alert.alert(
-              'Success',
-              `Payment of PHP ${route.params.newPayment.amount.toLocaleString()} recorded successfully`
-            );
-
             // Clear the newPayment param
             navigation.setParams({ newPayment: undefined });
           }
@@ -173,7 +167,9 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
       clientName: loan.clientName,
       loanAmount: loan.amount,
       startDate: loan.startDate,
-      endDate: loan.endDate
+      endDate: loan.endDate,
+      interestAmount: loan.interestAmount,
+      interestPercent: loan.interestPercent
     });
   };
 
@@ -361,7 +357,31 @@ const LoanDetails = ({ route, navigation }: LoanDetailsRootProps) => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Next Payment</Text>
           <View style={styles.nextPaymentContainer}>
-            <Text style={styles.nextPaymentDate}>August 15, 2023</Text>
+            <Text style={styles.nextPaymentDate}>
+              {(() => {
+                if (paymentHistory.length === 0) {
+                  // If no payments, fallback to loan start date + 7 days or current date + 7 days
+                  const baseDate = loan.startDate ? new Date(loan.startDate) : new Date();
+                  const nextDate = new Date(baseDate);
+                  nextDate.setDate(nextDate.getDate() + 7);
+                  return nextDate.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+                } else {
+                  // Get latest payment date and add 7 days
+                  const latestPaymentDate = new Date(paymentHistory[0].date);
+                  const nextDate = new Date(latestPaymentDate);
+                  nextDate.setDate(nextDate.getDate() + 7);
+                  return nextDate.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+                }
+              })()}
+            </Text>
               <Text style={styles.nextPaymentNote}>
               Suggested payment: PHP {Math.min(500, metrics.remainingBalance).toLocaleString()}
             </Text>
